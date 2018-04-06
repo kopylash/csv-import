@@ -44,6 +44,7 @@
     "camelcase": "error",
     "one-var": "off",
     "linebreak-style": "off",
-    "keyword-spacing": "off"
+    "keyword-spacing": "off",
+    "new-cap": "off"
   }
 }
