@@ -13,9 +13,11 @@ class ElasticStream extends Writable {
   }
 
   _write(chunk, encoding, callback) {
+    this.bulkPayload.push(chunk[0], chunk[1]);
+    this.count++;
+
     if (this.bulkPayload.length === BULK_PAYLOAD_THRESHOLD * 2) {
       return ElasticsearchService.bulkInsert(this.bulkPayload).then(() => {
-        this.count += BULK_PAYLOAD_THRESHOLD;
         this.bulkPayload = [];
 
         this.emit('progress', this.count);
@@ -23,23 +25,23 @@ class ElasticStream extends Writable {
         callback();
       }).catch(error => callback(error));
     } else {
-      this.bulkPayload.push(chunk[0]);
-      this.bulkPayload.push(chunk[1]);
-
       callback();
     }
   }
 
   _final(callback) {
-    return ElasticsearchService.bulkInsert(this.bulkPayload).then(() => {
-      this.count += this.bulkPayload.length / 2;
-      this.bulkPayload = [];
+    if (this.bulkPayload.length > 0) {
+      return ElasticsearchService.bulkInsert(this.bulkPayload).then(() => {
+        this.emit('progress', this.count);
 
-      this.emit('progress', this.count);
-      this.count = 0;
+        this.bulkPayload = [];
+        this.count = 0;
 
+        callback();
+      }).catch(error => callback(error));
+    } else {
       callback();
-    }).catch(error => callback(error));
+    }
   }
 }
 
