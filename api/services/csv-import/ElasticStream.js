@@ -3,7 +3,7 @@
 const {Writable} = require('stream');
 const ElasticsearchService = require('../ElasticsearchService');
 
-const BULK_PAYLOAD_THRESHOLD = 10000;
+const BULK_PAYLOAD_THRESHOLD = 15000;
 
 class ElasticStream extends Writable {
   constructor(options) {
@@ -18,9 +18,9 @@ class ElasticStream extends Writable {
 
     if (this.bulkPayload.length === BULK_PAYLOAD_THRESHOLD * 2) {
       return ElasticsearchService.bulkInsert(this.bulkPayload).then(() => {
-        this.bulkPayload = [];
-
         this.emit('progress', this.count);
+
+        this.bulkPayload = [];
 
         callback();
       }).catch(error => callback(error));
