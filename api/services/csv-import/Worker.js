@@ -28,6 +28,27 @@ class Worker {
 
     log.verbose(`${this.id}: Processing file ${job.file.name} ...`);
 
+    const input = fs.createReadStream(job.file.path);
+
+    const parser = csv.parse({
+      auto_parse: true,
+      columns: ['id', 'name', 'age', 'address', 'team'],
+      skip_lines_with_error: true,
+      skip_empty_lines: true,
+    });
+
+    parser.on('skip', (error) => {
+      log.error(`${this.id}: CSV parsing error.`, error.message);
+
+      job.errors.push(error.message);
+    });
+
+    parser.on('error', (error) => {
+      log.error(`${this.id}: CSV parsing error`, error.message);
+
+      job.errors.push(error.message);
+    });
+
     const objectToBulk = new Transform({
       readableObjectMode: true,
       writableObjectMode: true,
@@ -36,14 +57,6 @@ class Worker {
         this.push([{index: {_index: 'contacts', _type: 'contact'}}, chunk]);
         callback();
       }
-    });
-    const input = fs.createReadStream(job.file.path);
-
-    const parser = csv.parse({auto_parse: true, columns: ['id', 'name', 'age', 'address', 'team']});
-    parser.on('error', (error) => {
-      log.error(`${this.id}: CSV parsing error`, error.message);
-
-      job.errors.push(error);
     });
 
     const pipeline = input.pipe(parser).pipe(objectToBulk).pipe(new ElasticStream());
@@ -57,7 +70,7 @@ class Worker {
     pipeline.on('error', (error) => {
       log.error(`${this.id}: elasticsearch streaming error`, error);
 
-      job.errors.push(error);
+      job.errors.push(error.message);
     });
 
     pipeline.on('finish', () => {
