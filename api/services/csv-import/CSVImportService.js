@@ -11,7 +11,7 @@ module.exports = {
     processingQueue.add(fileInfo);
   },
 
-  getJobStatus() {
-
+  getJobs() {
+    return processingQueue.jobs;
   }
 };

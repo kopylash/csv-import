@@ -24,5 +24,11 @@ module.exports = {
       });
 
     form.parse(req);
+  },
+
+  getJobs(req, res) {
+    const jobs = CSVImportService.getJobs();
+
+    return res.json(jobs);
   }
 };
