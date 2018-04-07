@@ -1,8 +1,7 @@
 'use strict';
 
 const {Writable} = require('stream');
-const log = require('../../server/logger');
-const ElasticsearchService = require('./ElasticsearchService');
+const ElasticsearchService = require('../ElasticsearchService');
 
 const BULK_PAYLOAD_THRESHOLD = 10000;
 
@@ -19,7 +18,7 @@ class ElasticStream extends Writable {
         this.count += BULK_PAYLOAD_THRESHOLD;
         this.bulkPayload = [];
 
-        log.verbose(`${this.count} records stored`);
+        this.emit('progress', this.count);
 
         callback();
       }).catch(error => callback(error));
@@ -36,8 +35,7 @@ class ElasticStream extends Writable {
       this.count += this.bulkPayload.length / 2;
       this.bulkPayload = [];
 
-      log.verbose(`Totally ${this.count} records stored`);
-
+      this.emit('progress', this.count);
       this.count = 0;
 
       callback();
