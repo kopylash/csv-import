@@ -7,6 +7,9 @@ const log = require('../../../server/logger');
 const ElasticStream = require('./ElasticStream');
 const jobStatus = require('./JobStatus');
 
+const DEFAULT_INDEX = 'contacts';
+const DEFAULT_TYPE = 'contact';
+
 class Worker {
   constructor(id, queue) {
     this.id = id;
@@ -54,7 +57,7 @@ class Worker {
       writableObjectMode: true,
 
       transform(chunk, encoding, callback) {
-        this.push([{index: {_index: 'contacts', _type: 'contact'}}, chunk]);
+        this.push([{index: {_index: DEFAULT_INDEX, _type: DEFAULT_TYPE}}, chunk]);
         callback();
       }
     });
