@@ -3,6 +3,7 @@
 const fs = require('fs');
 const csv = require('csv');
 const {Transform} = require('stream');
+const {removeFile} = require('../../../server/utils');
 const log = require('../../../server/logger');
 const ElasticStream = require('./ElasticStream');
 const jobStatus = require('./JobStatus');
@@ -79,9 +80,11 @@ class Worker {
     pipeline.on('finish', () => {
       log.verbose(`${this.id}: Finished processing ${job.file.name}`);
 
-      job.status = jobStatus.DONE;
+      setImmediate(removeFile, job.file.path);
 
+      job.status = jobStatus.DONE;
       this.busy = false;
+
       this.checkQueue();
     });
   }
