@@ -3,6 +3,7 @@
 const fs = require('fs');
 const csv = require('csv');
 const {Transform} = require('stream');
+const pump = require('pump');
 const {removeFile} = require('../../../server/utils');
 const log = require('../../../server/logger');
 const ElasticStream = require('./ElasticStream');
@@ -63,7 +64,19 @@ class Worker {
       }
     });
 
-    const pipeline = input.pipe(parser).pipe(objectToBulk).pipe(new ElasticStream());
+    const pipeline = pump(input, parser, objectToBulk, new ElasticStream(), (error) => {
+      if (error) {
+        job.status = jobStatus.ERROR;
+      } else {
+        job.status = jobStatus.DONE;
+      }
+
+      log.verbose(`${this.id}: Finished processing ${job.file.name}`);
+
+      setImmediate(removeFile, job.file.path);
+      this.busy = false;
+      this.checkQueue();
+    });
 
     pipeline.on('progress', (count) => {
       log.verbose(`${this.id}: ${count} records stored`);
@@ -75,17 +88,6 @@ class Worker {
       log.error(`${this.id}: elasticsearch streaming error`, error);
 
       job.errors.push(error.message);
-    });
-
-    pipeline.on('finish', () => {
-      log.verbose(`${this.id}: Finished processing ${job.file.name}`);
-
-      setImmediate(removeFile, job.file.path);
-
-      job.status = jobStatus.DONE;
-      this.busy = false;
-
-      this.checkQueue();
     });
   }
 }

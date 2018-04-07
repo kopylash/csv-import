@@ -3,5 +3,6 @@
 module.exports = {
   PENDING: 'pending',
   IN_PROGRESS: 'in progress',
-  DONE: 'done'
+  DONE: 'done',
+  ERROR: 'error'
 };
