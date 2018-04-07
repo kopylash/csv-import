@@ -7,5 +7,10 @@ module.exports = {
   'GET /jobs': {
     controller: 'ImportController',
     action: 'getJobs'
+  },
+
+  'GET /search': {
+    controller: 'SearchController',
+    action: 'search'
   }
 };

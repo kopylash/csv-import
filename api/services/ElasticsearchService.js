@@ -3,8 +3,24 @@
 const client = require('../../server/elasticConnector')();
 
 module.exports = {
-  searchByName(name) {
-
+  searchContactByName(name) {
+    return client.search({
+      index: 'contacts',
+      type: 'contact',
+      body: {
+        query: {
+          match_phrase_prefix: {
+            name: {
+              query: name,
+              slop: 6
+            }
+          }
+        },
+        size: 20
+      }
+    }).then(res => {
+      return res.hits.hits.map(i => i._source);
+    });
   },
 
   bulkInsert(bulkPayload) {
