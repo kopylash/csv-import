@@ -5,6 +5,7 @@ const csv = require('csv');
 const {Transform} = require('stream');
 const log = require('../../../server/logger');
 const ElasticStream = require('./ElasticStream');
+const jobStatus = require('./JobStatus');
 
 class Worker {
   constructor(id, queue) {
@@ -12,19 +13,20 @@ class Worker {
     this.busy = false;
     this.queue = queue;
 
-    this.queue.on('file_added', () => this.checkQueue());
+    this.queue.on('job_added', () => this.checkQueue());
   }
 
   checkQueue() {
-    if (!this.busy && !this.queue.isEmpty()) {
+    if (!this.busy && !this.queue.isEmpty) {
       this.process(this.queue.next());
     }
   }
 
-  process(fileInfo) {
+  process(job) {
     this.busy = true;
+    job.status = jobStatus.IN_PROGRESS;
 
-    log.verbose(`${this.id}: Processing file ${fileInfo.name} ...`);
+    log.verbose(`${this.id}: Processing file ${job.file.name} ...`);
 
     const objectToBulk = new Transform({
       readableObjectMode: true,
@@ -35,27 +37,35 @@ class Worker {
         callback();
       }
     });
-    const input = fs.createReadStream(fileInfo.path);
+    const input = fs.createReadStream(job.file.path);
 
     const parser = csv.parse({auto_parse: true, columns: ['id', 'name', 'age', 'address', 'team']});
     parser.on('error', (error) => {
-      log.error('CSV parsing error', error.message);
+      log.error(`${this.id}: CSV parsing error`, error.message);
+
+      job.errors.push(error);
     });
 
     const pipeline = input.pipe(parser).pipe(objectToBulk).pipe(new ElasticStream());
 
     pipeline.on('progress', (count) => {
       log.verbose(`${this.id}: ${count} records stored`);
+
+      job.progress = count;
     });
 
     pipeline.on('error', (error) => {
       log.error(`${this.id}: elasticsearch streaming error`, error);
+
+      job.errors.push(error);
     });
 
     pipeline.on('finish', () => {
-      log.verbose(`Finished processing ${fileInfo.name}`);
+      log.verbose(`${this.id}: Finished processing ${job.file.name}`);
+
+      job.status = jobStatus.DONE;
+
       this.busy = false;
-      // update job status
       this.checkQueue();
     });
   }
