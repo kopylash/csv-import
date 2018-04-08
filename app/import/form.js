@@ -12,6 +12,9 @@ class ImportForm extends React.Component {
       uploading: false
     };
 
+    this.form = React.createRef();
+    this.uploadField = React.createRef();
+
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
@@ -23,7 +26,7 @@ class ImportForm extends React.Component {
     });
 
     const form = new FormData();
-    const file = document.getElementById('uploadField').files[0];
+    const file = this.uploadField.current.files[0];
     form.append('import', file);
 
     const xhr = new XMLHttpRequest();
@@ -44,6 +47,7 @@ class ImportForm extends React.Component {
         uploading: false
       });
       this.props.onImport();
+      this.form.current.reset();
     };
 
     xhr.send(form);
@@ -51,8 +55,8 @@ class ImportForm extends React.Component {
 
   render() {
     return (
-      <form encType="multipart/form-data" method="post" onSubmit={this.handleSubmit}>
-        <input id="uploadField" type="file" name="import" accept=".csv"/>
+      <form id="importForm" encType="multipart/form-data" method="post" onSubmit={this.handleSubmit} ref={this.form}>
+        <input id="uploadField" type="file" name="import" accept=".csv" ref={this.uploadField}/>
         <input id="uploadButton" type="submit" value="Upload" disabled={this.state.uploading}/>
       </form>
     );
