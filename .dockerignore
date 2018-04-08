@@ -1,0 +1,14 @@
+node_modules
+npm_debug.log
+.git
+.gitignore
+.idea
+z_*
+*.csv
+README.md
+LICENSE
+.eslint*
+.editorconfig
+.dockerignore
+Dockerfile
+docker-compose.yml
