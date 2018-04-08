@@ -5,7 +5,6 @@
   },
   "extends": [
     "eslint:recommended",
-    "google",
     "plugin:node/recommended"
   ],
   "plugins": [
@@ -41,10 +40,10 @@
       "always"
     ],
     "no-multi-spaces": "error",
-    "camelcase": "error",
     "one-var": "off",
     "linebreak-style": "off",
     "keyword-spacing": "off",
-    "new-cap": "off"
+    "new-cap": "off",
+    "node/no-unpublished-require": "off"
   }
 }
