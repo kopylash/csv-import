@@ -1,6 +1,7 @@
 'use strict';
 
 const formidable = require('formidable');
+const os = require('os');
 const log = require('../../server/logger');
 const CSVImportService = require('../services/csv-import/CSVImportService');
 const {removeFile} = require('../../server/utils');
@@ -10,7 +11,7 @@ module.exports = {
     let fileInfo;
     const form = new formidable.IncomingForm();
 
-    form.uploadDir = './tmp';
+    form.uploadDir = os.tmpdir();
     form.keepExtensions = true;
     form.maxFileSize = 1000 * 1024 * 1024;
 
@@ -22,9 +23,15 @@ module.exports = {
         log.verbose(`File ${file.name} upload finished`);
       })
       .on('end', () => {
-        CSVImportService.registerJob(fileInfo);
+        if (form.type !== 'multipart') {
+          return res.status(400).send('Form should be multipart');
+        }
 
-        res.status(200).send('File upload done');
+        if (fileInfo) {
+          CSVImportService.registerJob(fileInfo);
+        }
+
+        res.status(200).send();
       })
       .on('error', (error) => {
         log.error('File uploading error.', error);
