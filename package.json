@@ -12,6 +12,7 @@
     "test": "echo \"not implemented yet\""
   },
   "dependencies": {
+    "@material-ui/icons": "^1.0.0-beta.42",
     "csv": "^2.0.0",
     "elasticsearch": "^14.2.2",
     "express": "^4.16.3",
@@ -21,6 +22,7 @@
     "pump": "^3.0.0",
     "react": "^16.3.1",
     "react-dom": "^16.3.1",
+    "react-select": "^1.2.1",
     "winston": "^2.4.1"
   },
   "devDependencies": {

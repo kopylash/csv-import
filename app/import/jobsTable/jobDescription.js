@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import {TableCell, TableRow} from 'material-ui/Table';
 import {CircularProgress} from 'material-ui/Progress';
 import CONSTANTS from '../../constants';
+import ErrorCounter from './errorCounter';
 
 const JobDescription = (props) => {
   return (
@@ -16,7 +17,9 @@ const JobDescription = (props) => {
           : props.status}
       </TableCell>
       <TableCell numeric>{props.progress}</TableCell>
-      <TableCell numeric>{props.errors.length}</TableCell>
+      <TableCell numeric>
+        <ErrorCounter errors={props.errors}/>
+      </TableCell>
     </TableRow>
   );
 };
