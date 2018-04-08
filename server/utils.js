@@ -2,7 +2,6 @@
 
 const fs = require('fs');
 const path = require('path');
-const Promise = require('bluebird');
 const log = require('./logger');
 
 module.exports = {
