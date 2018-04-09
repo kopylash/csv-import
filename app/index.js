@@ -4,9 +4,13 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import ImportSection from './import';
+import SearchSection from './search';
 
-const App = () => {
-  return <ImportSection/>;
-};
+const App = () => (
+  <React.Fragment>
+    <ImportSection/>
+    <SearchSection/>
+  </React.Fragment>
+);
 
-ReactDOM.render(<App />, document.getElementById('content'));
+ReactDOM.render(<App/>, document.getElementById('content'));
