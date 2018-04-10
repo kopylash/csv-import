@@ -18,7 +18,8 @@ class SearchSection extends React.Component {
     this.state = {
       value: '',
       suggestions: [],
-      selected: null
+      selected: null,
+      error: null
     };
 
     this.onChange = this.onChange.bind(this);
@@ -37,7 +38,12 @@ class SearchSection extends React.Component {
   onSuggestionsFetchRequested({value}) {
     searchContacts(value).then(suggestions => {
       this.setState({
-        suggestions
+        suggestions,
+        error: null
+      });
+    }).catch(error => {
+      this.setState({
+        error: error.message
       });
     });
   }
@@ -70,6 +76,7 @@ class SearchSection extends React.Component {
 
     return (
       <div className="autosuggest__wrapper">
+        {this.state.error && <p className="error">{this.state.error}</p>}
         <Autosuggest
           suggestions={this.state.suggestions}
           onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}

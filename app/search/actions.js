@@ -11,8 +11,7 @@ export const searchContacts = (input) => {
     .then(res => res.json())
     .catch(error => {
       console.error(error);
-      alert('Search error happened');
 
-      return [];
+      throw new Error('Search error hapenned. Try again later');
     });
 };
