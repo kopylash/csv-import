@@ -18,36 +18,42 @@ class ImportForm extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
+  resetForm() {
+    this.setState({
+      uploading: false
+    });
+    this.form.current.reset();
+  }
+
   handleSubmit(event) {
     event.preventDefault();
+
+    const file = this.uploadField.current.files[0];
+
+    if (!file) {
+      return;
+    }
 
     this.setState({
       uploading: true
     });
 
     const form = new FormData();
-    const file = this.uploadField.current.files[0];
     form.append('import', file);
 
     const xhr = new XMLHttpRequest();
     xhr.open('post', `${CONSTANTS.apiURL}/import`, true);
 
-    // xhr.upload.onprogress = function(event) {
-    //   if (event.lengthComputable) {
-    //     console.info(((event.loaded / event.total) * 100).toFixed(1));
-    //   }
-    // };
-
     xhr.onerror = (error) => {
       console.error(error);
+
+      this.resetForm();
+      alert('File uploading error. Try again.');
     };
 
     xhr.onload = () => {
-      this.setState({
-        uploading: false
-      });
+      this.resetForm();
       this.props.onImport();
-      this.form.current.reset();
     };
 
     xhr.send(form);
