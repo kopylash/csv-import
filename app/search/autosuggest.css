@@ -1,3 +1,10 @@
+.autosuggest__wrapper {
+  display: flex;
+  align-items: center;
+  margin-top: 25px;
+  flex-direction: column;
+}
+
 .react-autosuggest__container {
   position: relative;
 }
@@ -31,6 +38,8 @@
   position: absolute;
   top: 51px;
   width: 280px;
+  height: 250px;
+  overflow-y: scroll;
   border: 1px solid #aaa;
   background-color: #fff;
   font-family: Roboto, sans-serif;
