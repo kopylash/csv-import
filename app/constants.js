@@ -1,7 +1,7 @@
 'use strict';
 
 export default {
-  apiURL: 'http://localhost:8080',
+  apiURL: API_URL || 'http://localhost:8080',
 
   jobsCheckingInterval: 3000,
 
