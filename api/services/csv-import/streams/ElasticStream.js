@@ -1,7 +1,7 @@
 'use strict';
 
 const {Writable} = require('stream');
-const ElasticsearchService = require('../ElasticsearchService');
+const ElasticsearchService = require('../../ElasticsearchService');
 
 const BULK_PAYLOAD_THRESHOLD = 15000;
 

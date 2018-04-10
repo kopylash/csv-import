@@ -5,12 +5,11 @@ const csv = require('csv');
 const {Transform} = require('stream');
 const pump = require('pump');
 const {removeFile} = require('../../../server/utils');
+const {defaultIndex, defaultType} = require('../../../config/elasticsearch');
 const log = require('../../../server/logger');
-const ElasticStream = require('./ElasticStream');
 const jobStatus = require('./JobStatus');
-
-const DEFAULT_INDEX = 'contacts';
-const DEFAULT_TYPE = 'contact';
+const ElasticStream = require('./streams/ElasticStream');
+const ValidationStream = require('./streams/ValidationStream');
 
 class Worker {
   constructor(id, queue) {
@@ -41,17 +40,24 @@ class Worker {
       skip_lines_with_error: true,
       skip_empty_lines: true,
     });
-
     parser.on('skip', (error) => {
       log.error(`${this.id}: CSV parsing error.`, error.message);
 
       job.errors.push(error.message);
     });
-
     parser.on('error', (error) => {
       log.error(`${this.id}: CSV parsing error`, error.message);
 
       job.errors.push(error.message);
+    });
+
+    const validator = new ValidationStream();
+    validator.on('skip', (errors) => {
+      const messages = errors.map(e => e.message);
+
+      log.error(`${this.id}: Validation error.`, messages.join('\n'));
+
+      job.errors.push(messages);
     });
 
     const objectToBulk = new Transform({
@@ -59,12 +65,12 @@ class Worker {
       writableObjectMode: true,
 
       transform(chunk, encoding, callback) {
-        this.push([{index: {_index: DEFAULT_INDEX, _type: DEFAULT_TYPE}}, chunk]);
+        this.push([{index: {_index: defaultIndex, _type: defaultType}}, chunk]);
         callback();
       }
     });
 
-    const pipeline = pump(input, parser, objectToBulk, new ElasticStream(), (error) => {
+    const pipeline = pump(input, parser, validator, objectToBulk, new ElasticStream(), (error) => {
       if (error) {
         job.status = jobStatus.ERROR;
       } else {

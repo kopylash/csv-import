@@ -1,12 +1,13 @@
 'use strict';
 
 const client = require('../../server/elasticConnector')();
+const {defaultIndex, defaultType} = require('../../config/elasticsearch');
 
 module.exports = {
   searchContactByName(name) {
     return client.search({
-      index: 'contacts',
-      type: 'contact',
+      index: defaultIndex,
+      type: defaultType,
       body: {
         query: {
           match_phrase_prefix: {
