@@ -1,6 +1,7 @@
 'use strict';
 
 const path = require('path');
+const helmet = require('helmet');
 const asyncMiddleware = require('./utils').asyncMiddleware;
 const log = require('./logger');
 
@@ -10,6 +11,8 @@ module.exports = {
       log.verbose(`HTTP Request :: Method: ${req.method}, Url: ${req.url}`);
       next();
     });
+
+    app.use(helmet());
 
     // CORS support
     app.use((req, res, next) => {

@@ -1,14 +1,15 @@
 'use strict';
 
+const express = require('express');
+const http = require('http');
 const routes = require('../config/routes');
 const _port = require('../config/globals').port;
 const log = require('./logger');
 
 module.exports = {
   start({port = _port, env = process.env.NODE_ENV || 'development'}) {
-    const express = require('express'),
-      app = express(),
-      server = require('http').createServer(app);
+    const app = express();
+    const server = http.createServer(app);
 
     const controllersMap = require('./controllersMapper');
 
