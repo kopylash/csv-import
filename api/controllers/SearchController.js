@@ -14,7 +14,7 @@ module.exports = {
     return ElasticsearchService.searchContactByName(query).then(contacts => {
       log.verbose(`Found ${contacts.length} contacts`);
 
-      return res.json(contacts);
+      return res.json({results: contacts});
     });
   }
 };
