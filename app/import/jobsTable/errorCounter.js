@@ -8,7 +8,7 @@ import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 const ErrorCounter = (props) => {
   return props.errors.length ? (
     <React.Fragment>
-      <IconButton aria-label="Errors" onClick={() => alert(props.errors)}>
+      <IconButton aria-label="Errors" onClick={() => alert(props.errors.join('\n'))}>
         <ErrorOutlineIcon/>
       </IconButton>
       {props.errors.length}
