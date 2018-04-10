@@ -30,7 +30,7 @@ module.exports = {
       }
     });
 
-    app.use((error, req, res) => {
+    app.use((error, req, res, next) => { // eslint-disable-line
       log.error(error);
       res.status(500).send(error.message);
     });
