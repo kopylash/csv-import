@@ -7,7 +7,7 @@ services:
       - 9300:9300
     environment:
       - discovery.type=single-node
-      - "ES_JAVA_OPTS=-Xms1024m -Xmx2048m"
+      - "ES_JAVA_OPTS=-Xms256m -Xmx1024m"
   app:
     build:
       context: .
