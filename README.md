@@ -1,5 +1,7 @@
 # CSV import
 
+It is a job interview test task.
+
 Implement csv import with the possibility to search from imported data.
 - Import form displays real-time progress.
 - CSV file may contain millions of rows and can be large.
