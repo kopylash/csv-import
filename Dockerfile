@@ -4,10 +4,15 @@ FROM node:8.11-alpine
 WORKDIR /usr/src/app
 
 COPY package*.json ./
-RUN npm install --only=production
+RUN npm install
 
 # Bundle app source
 COPY . .
 
+ARG API_URL
+ENV API_URL=$API_URL
+
+RUN npm run build
+
 EXPOSE 8080
-CMD [ "npm", "start" ]
+CMD [ "node", "app.js" ]

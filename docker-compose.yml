@@ -9,7 +9,10 @@ services:
       - discovery.type=single-node
       - "ES_JAVA_OPTS=-Xms1024m -Xmx2048m"
   app:
-    build: .
+    build:
+      context: .
+      args:
+        API_URL: "http://localhost"
     environment:
       NODE_ENV: production
       ELASTIC_URL: "elasticsearch:9200"

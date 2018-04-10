@@ -12,3 +12,4 @@ LICENSE
 .dockerignore
 Dockerfile
 docker-compose.yml
+dist
