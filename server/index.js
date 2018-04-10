@@ -12,7 +12,7 @@ module.exports = {
 
     const controllersMap = require('./controllersMapper');
 
-    app.use(express.static('public'));
+    app.use(express.static('dist'));
 
     const httpRequestsHandler = require('./httpRequestsHandler');
     httpRequestsHandler.createHandlers(app, routes, controllersMap);
